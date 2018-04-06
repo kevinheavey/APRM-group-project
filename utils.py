@@ -6,6 +6,8 @@ import pyfolio_fork_aprm as pf
 from functools import partial
 import pandas as pd
 from collections import namedtuple
+import statsmodels.formula.api as smf
+from statsmodels.iolib.summary2 import summary_col
 
 
 def drawdown_alt(returns_series):
@@ -234,11 +236,14 @@ def get_funds_df(funds_list):
     return pd.DataFrame(sub_list)
 
 
-def make_tables(full_perf_stats_df, funds_df):
+def make_tables(full_perf_stats_df, funds_df, fama_french_df):
     float_format = '%0.2f'
     with pd.ExcelWriter('tables.xlsx') as w:
         full_perf_stats_df.to_excel(w, 'perf_stats', float_format=float_format)
         funds_df.to_excel(w, 'fund_matches')
+        fama_french_df.to_excel(w, 'fama_french', float_format='%0.4f')
+
+
 
 
 def get_ff_factor_data(returns_df):
@@ -252,10 +257,44 @@ def get_risk_free_returns_series(returns_df):
     return returns_df.join(ff, how='left')['RF'].ffill()
 
 
+def fama_french_regression(returns_series, index_returns_series, extra_factors_df):
+    combined_df = returns_series.to_frame().join([extra_factors_df, index_returns_series], how='inner').dropna()
+    excess_returns_name = returns_series.name + '_excess_returns'
+    index_excess_returns_name = 'benchmark_excess_returns'
+    combined_df.loc[:, excess_returns_name] = combined_df[returns_series.name] - combined_df['RF']
+    combined_df.loc[:, index_excess_returns_name] = combined_df[index_returns_series.name] - combined_df['RF']
+    formula = '{} ~ 1 + {} + SMB + HML + Mom'.format(excess_returns_name, index_excess_returns_name)
+
+    return smf.ols(formula, combined_df).fit(cov_type='HAC', cov_kwds={'maxlags': 12, 'use_correction': True})
+
+def fama_french_from_fund_obj(fund, returns_df, extra_factors_df):
+    returns_series = returns_df[fund.name]
+    index_returns_series = returns_df[fund.index_benchmark]
+    return fama_french_regression(returns_series, index_returns_series, extra_factors_df)
+
+def get_extra_factors_df(returns_df):
+    return ep.utils.load_portfolio_risk_factors(start=returns_df.index[0], end=returns_df.index[-1])
+
+def summary(fit_list):
+    return summary_col(fit_list,
+                       float_format='%0.4f',
+                       info_dict={'N':lambda x: "{0:d}".format(int(x.nobs)),
+                                  'R2':lambda x: "{:.4f}".format(x.rsquared)},stars=True
+                      ).tables[0]
+
+def get_fama_french_df(funds_list, returns_df):
+    extra_factors = get_extra_factors_df(returns_df)
+    fit_list = [fama_french_from_fund_obj(fund, returns_df, extra_factors)
+               for fund in funds_list]
+    return summary(fit_list)
+
+
+
 def main():
     returns_df = get_returns_df()
     risk_free_returns = get_risk_free_returns_series(returns_df)
     funds_list = get_funds_list()
     funds_df = get_funds_df(funds_list)
     full_perf_stats_df = get_full_perf_stats_df(returns_df, funds_list, risk_free_returns)
-    make_tables(full_perf_stats_df, funds_df)
+    fama_french_df = get_fama_french_df(funds_list, returns_df)
+    make_tables(full_perf_stats_df, funds_df, fama_french_df)
