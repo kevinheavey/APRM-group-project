@@ -212,7 +212,7 @@ def get_returns_df():
 
 
 def get_funds_list():
-    Fund = namedtuple('Fund', 'name', 'passive_alternative', 'index_benchmark')
+    Fund = namedtuple('Fund', 'name passive_alternative index_benchmark')
     jfuax = Fund('JFUAX', 'BWIIX', 'MXWO')
     jlcax = Fund('JLCAX', 'BSPIX', 'SPX')
     jdeax = Fund('JDEAX', 'BSPIX', 'SPX')
