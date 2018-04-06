@@ -1,2 +1,2 @@
-pyfolio_fork_aprm==0.8.1
+pyfolio_fork_aprm==0.8.2
 statsmodels==0.8.0
