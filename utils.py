@@ -13,7 +13,6 @@ ACTIVE = ['JFUAX', 'JLCAX', 'JDEAX', 'OEIAX', 'JFTAX']
 PASSIVE = ['BWIIX', 'BSPIX', 'MAIIX']
 
 
-
 def drawdown_alt(returns_series):
     price_series = returns_series.add(1).cumprod()
     fund_nrow = price_series.shape[0]
@@ -208,6 +207,27 @@ def get_full_perf_stats_df(returns_df, funds_list, risk_free_returns_series):
     return mark_active_vs_passive_cols(pd.concat(_list, axis=1))
 
 
+def get_small_perf_stats_df(full_perf_stats_df):
+    cols = ['Annual return',
+            'Cumulative returns',
+            'Volatility (annualised)',
+            'Sharpe ratio (annualised)',
+            'Drawdown',
+            'Sortino ratio (annualised)',
+            'Skew',
+            'Kurtosis',
+            'Value at risk',
+            'Alpha (annualised)',
+            'Beta',
+            'Expected shortfall',
+            'Information ratio (annualised)',
+            'Shortfall risk',
+            'Sterling ratio (annualised)',
+            'Treynor ratio (annualised)',
+            'root(lpm(0,2)) (annualised)']
+    return full_perf_stats_df[cols]
+
+
 def get_returns_df():
     prices = (pd.read_excel('APRM_total_returns.xlsx', skiprows=[0, 1, 2, 4, 5], index_col=0)
               .rename(columns=lambda col: col.replace(' US Equity', '').replace(' Index', ''))
@@ -248,12 +268,11 @@ def make_tables(full_perf_stats_df, funds_df, fama_french_df):
         fama_french_df.to_excel(w, 'fama_french', float_format=float_format)
 
 
-
-
 def get_ff_factor_data(returns_df):
     ff = ep.utils.load_portfolio_risk_factors(start=returns_df.index[0],
                                               end=returns_df.index[-1])
     return ff
+
 
 def get_risk_free_returns_series(returns_df):
     ff = get_ff_factor_data(returns_df)
@@ -271,20 +290,24 @@ def fama_french_regression(returns_series, index_returns_series, extra_factors_d
 
     return smf.ols(formula, combined_df).fit(cov_type='HAC', cov_kwds={'maxlags': 12, 'use_correction': True})
 
+
 def fama_french_from_fund_obj(fund, returns_df, extra_factors_df):
     returns_series = returns_df[fund.name]
     index_returns_series = returns_df[fund.index_benchmark]
     return fama_french_regression(returns_series, index_returns_series, extra_factors_df)
 
+
 def get_extra_factors_df(returns_df):
     return ep.utils.load_portfolio_risk_factors(start=returns_df.index[0], end=returns_df.index[-1])
+
 
 def summary(fit_list):
     return summary_col(fit_list,
                        float_format='%0.4f',
-                       info_dict={'N':lambda x: "{0:d}".format(int(x.nobs)),
-                                  'R2':lambda x: "{:.2f}".format(x.rsquared)},stars=True
-                      ).tables[0]
+                       info_dict={'N': lambda x: "{0:d}".format(int(x.nobs)),
+                                  'R2': lambda x: "{:.2f}".format(x.rsquared)}, stars=True
+                       ).tables[0]
+
 
 def mark_active_vs_passive_cols(df):
     df.columns.name = 'Fund'
@@ -298,9 +321,8 @@ def mark_active_vs_passive_cols(df):
 def get_fama_french_df(funds_list, returns_df):
     extra_factors = get_extra_factors_df(returns_df)
     fit_list = [fama_french_from_fund_obj(fund, returns_df, extra_factors)
-               for fund in funds_list]
+                for fund in funds_list]
     return mark_active_vs_passive_cols(summary(fit_list))
-
 
 
 def main():
