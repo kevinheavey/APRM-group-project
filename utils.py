@@ -260,7 +260,10 @@ def get_funds_list():
 
 def get_funds_df(funds_list):
     sub_list = funds_list[:5]  # just the active ones
-    return pd.DataFrame(sub_list)
+    rename_dict = {'name': 'Fund name',
+                   'passive_alternative':'Passive alternative',
+                   'index_benchmark':'Index benchmark'}
+    return pd.DataFrame(sub_list).rename(columns=rename_dict)
 
 
 def make_tables(full_perf_stats_df, funds_df, fama_french_df, small_perf_stats_df):
