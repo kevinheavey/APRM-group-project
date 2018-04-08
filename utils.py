@@ -208,7 +208,7 @@ def get_full_perf_stats_df(returns_df, funds_list, risk_free_returns_series):
 
 
 def get_small_perf_stats_df(full_perf_stats_df):
-    cols = ['Annual return',
+    rows = ['Annual return',
             'Cumulative returns',
             'Volatility (annualised)',
             'Sharpe ratio (annualised)',
@@ -225,7 +225,7 @@ def get_small_perf_stats_df(full_perf_stats_df):
             'Sterling ratio (annualised)',
             'Treynor ratio (annualised)',
             'root(lpm(0,2)) (annualised)']
-    return full_perf_stats_df[cols]
+    return full_perf_stats_df.loc[rows]
 
 
 def get_returns_df():
