@@ -134,13 +134,15 @@ def get_perf_df(returns_series, risk_free_returns_series, factor_returns_series)
                                                suppress_print=True, backtest_label_replacement=returns_series.name,
                                                return_df=True, suppress_display=True)
                    .drop('Calmar ratio')  # not worth the hassle
-                   .rename({'Alpha': 'Alpha (annualised)',
+                   .rename({'Alpha': 'Alpha (CAPM, annualised)',
+                            'Annual return': 'Annual return (CAGR)',
                             'Max drawdown': 'Drawdown',
                             'Sharpe ratio': 'Sharpe ratio (annualised)',
                             'Omega ratio': 'Omega ratio (annualised)',
                             'Sortino ratio': 'Sortino ratio (annualised)',
                             'Daily value at risk': 'Value at risk',
-                            'Annual volatility': 'Volatility (annualised)'}))
+                            'Annual volatility': 'Volatility (annualised)',
+                            'Beta': 'Beta (CAPM)'}))
     perf_df_raw.loc['Drawdown'] = drawdown
     return perf_df_raw
 
@@ -213,7 +215,7 @@ def get_full_perf_stats_df(returns_df, funds_list, risk_free_returns_series, num
 
 
 def get_small_perf_stats_df(full_perf_stats_df):
-    rows = ['Annual return',
+    rows = ['Annual return (CAGR)',
             'Cumulative returns',
             'Volatility (annualised)',
             'Sharpe ratio (annualised)',
@@ -341,3 +343,6 @@ def main():
     small_perf_stats_df = get_small_perf_stats_df(full_perf_stats_df)
     fama_french_df = get_fama_french_df(funds_list, returns_df)
     make_tables(full_perf_stats_df, funds_df, fama_french_df, small_perf_stats_df)
+
+if __name__ == '__main__':
+    main()
