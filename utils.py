@@ -174,8 +174,7 @@ def get_extra_perf_stats(returns_series, risk_free_returns_series, index_returns
     stats_dict = {key: val(excess_returns_series) for key, val in extra_stats.items()}
     return pd.Series(stats_dict).to_frame(returns_series.name)
 
-
-def get_full_perf_stats(returns_series, risk_free_returns_series, index_returns_series):
+def get_full_perf_stats_numeric(returns_series, risk_free_returns_series, index_returns_series):
     returns_series = returns_series.dropna()  # one of the columns has some NaNs
     full_perf_df = (get_perf_df(returns_series,
                                 risk_free_returns_series,
@@ -184,7 +183,10 @@ def get_full_perf_stats(returns_series, risk_free_returns_series, index_returns_
                                                  risk_free_returns_series,
                                                  index_returns_series))
                     )
+    return full_perf_df
 
+def get_full_perf_stats(returns_series, risk_free_returns_series, index_returns_series):
+    full_perf_df = get_full_perf_stats_numeric(returns_series, risk_free_returns_series, index_returns_series)
     for stat, value in full_perf_df[returns_series.name].iteritems():
         if stat in EXTRA_PERCENT_ROWS:
             new_val = str(np.round(value * 100, 1)) + '%'
