@@ -259,8 +259,8 @@ def get_risk_free_returns_series(returns_df):
 
 def fama_french_regression(returns_series, index_returns_series, extra_factors_df):
     combined_df = returns_series.to_frame().join([extra_factors_df, index_returns_series], how='inner').dropna()
-    excess_returns_name = returns_series.name + '_excess_returns'
-    index_excess_returns_name = 'benchmark_excess_returns'
+    excess_returns_name = returns_series.name
+    index_excess_returns_name = 'benchmark'
     combined_df.loc[:, excess_returns_name] = combined_df[returns_series.name] - combined_df['RF']
     combined_df.loc[:, index_excess_returns_name] = combined_df[index_returns_series.name] - combined_df['RF']
     formula = '{} ~ 1 + {} + SMB + HML + Mom'.format(excess_returns_name, index_excess_returns_name)
