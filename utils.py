@@ -293,7 +293,7 @@ def fama_french_regression(returns_series, index_returns_series, extra_factors_d
     index_excess_returns_name = 'Index'
     combined_df.loc[:, excess_returns_name] = combined_df[returns_series.name] - combined_df['RF']
     combined_df.loc[:, index_excess_returns_name] = combined_df[index_returns_series.name] - combined_df['RF']
-    formula = '{} ~ 1 + {} + SMB + HML + Mom'.format(excess_returns_name, index_excess_returns_name)
+    formula = '{} ~ 1 + {} + SMB + HML'.format(excess_returns_name, index_excess_returns_name)
 
     return smf.ols(formula, combined_df).fit(cov_type='HAC', cov_kwds={'maxlags': 12, 'use_correction': True})
 
