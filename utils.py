@@ -15,7 +15,7 @@ def drawdown_alt(returns_series):
     fund_nrow = price_series.shape[0]
     Pdrop = np.zeros(fund_nrow, dtype=bool)
     for i in range(1, fund_nrow):
-        if price_series[i] < price_series[i - 1]:
+        if price_series.iloc[i] < price_series[i - 1]:
             Pdrop[i] = True
     Min = 0
     i = 0
@@ -27,12 +27,12 @@ def drawdown_alt(returns_series):
                 if Pdrop[j + 1]:
                     j = j + 1
                 else:
-                    if price_series[j] / price_series[i] - 1 < Min:
-                        Min = price_series[j] / price_series[i] - 1
+                    if price_series.iloc[j] / price_series.iloc[i] - 1 < Min:
+                        Min = price_series.iloc[j] / price_series.iloc[i] - 1
                     break
             if j == fund_nrow - 1:
-                if price_series[j] / price_series[i] - 1 < Min:
-                    Min = price_series[j] / price_series[i] - 1
+                if price_series.iloc[j] / price_series.iloc[i] - 1 < Min:
+                    Min = price_series.iloc[j] / price_series.iloc[i] - 1
         i = j
     return np.absolute(Min)
 
