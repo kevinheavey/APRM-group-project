@@ -277,7 +277,7 @@ def get_extra_factors_df(returns_df):
 
 def summary(fit_list):
     return summary_col(fit_list,
-                       float_format='%0.4f',
+                       float_format='%0.3f',
                        info_dict={'N':lambda x: "{0:d}".format(int(x.nobs)),
                                   'R2':lambda x: "{:.4f}".format(x.rsquared)},stars=True
                       ).tables[0]
