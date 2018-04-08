@@ -241,7 +241,7 @@ def make_tables(full_perf_stats_df, funds_df, fama_french_df):
     with pd.ExcelWriter('tables.xlsx') as w:
         full_perf_stats_df.to_excel(w, 'perf_stats', float_format=float_format)
         funds_df.to_excel(w, 'fund_matches')
-        fama_french_df.to_excel(w, 'fama_french', float_format='%0.4f')
+        fama_french_df.to_excel(w, 'fama_french', float_format='%0.3f')
 
 
 
