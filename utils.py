@@ -195,16 +195,19 @@ def get_full_perf_stats(returns_series, risk_free_returns_series, index_returns_
     return full_perf_df
 
 
-def get_stats_from_fund_obj(fund, returns_df, risk_free_returns):
+def get_stats_from_fund_obj(fund, returns_df, risk_free_returns, numeric=False):
     returns_series = returns_df[fund.name].dropna()
     risk_free_returns = pd.concat([risk_free_returns,
                                    returns_df[fund.name]], axis=1).dropna()['RF']
     index_returns = returns_df[fund.index_benchmark]
-    return get_full_perf_stats(returns_series, risk_free_returns, index_returns)
+    if numeric:
+        return get_full_perf_stats_numeric(returns_series, risk_free_returns, index_returns)
+    else:
+        return get_full_perf_stats(returns_series, risk_free_returns, index_returns)
 
 
-def get_full_perf_stats_df(returns_df, funds_list, risk_free_returns_series):
-    _list = [get_stats_from_fund_obj(fund, returns_df, risk_free_returns_series)
+def get_full_perf_stats_df(returns_df, funds_list, risk_free_returns_series, numeric=False):
+    _list = [get_stats_from_fund_obj(fund, returns_df, risk_free_returns_series, numeric)
              for fund in funds_list]
     return mark_active_vs_passive_cols(pd.concat(_list, axis=1))
 
@@ -216,8 +219,6 @@ def get_small_perf_stats_df(full_perf_stats_df):
             'Sharpe ratio (annualised)',
             'Drawdown',
             'Sortino ratio (annualised)',
-            'Skew',
-            'Kurtosis',
             'Value at risk',
             'Alpha (annualised)',
             'Beta',
