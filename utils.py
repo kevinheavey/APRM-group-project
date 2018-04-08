@@ -9,6 +9,10 @@ from collections import namedtuple
 import statsmodels.formula.api as smf
 from statsmodels.iolib.summary2 import summary_col
 
+ACTIVE = ['JFUAX', 'JLCAX', 'JDEAX', 'OEIAX', 'JFTAX']
+PASSIVE = ['BWIIX', 'BSPIX', 'MAIIX']
+
+
 
 def drawdown_alt(returns_series):
     price_series = returns_series.add(1).cumprod()
@@ -201,7 +205,7 @@ def get_stats_from_fund_obj(fund, returns_df, risk_free_returns):
 def get_full_perf_stats_df(returns_df, funds_list, risk_free_returns_series):
     _list = [get_stats_from_fund_obj(fund, returns_df, risk_free_returns_series)
              for fund in funds_list]
-    return pd.concat(_list, axis=1)
+    return mark_active_vs_passive_cols(pd.concat(_list, axis=1))
 
 
 def get_returns_df():
@@ -282,11 +286,20 @@ def summary(fit_list):
                                   'R2':lambda x: "{:.2f}".format(x.rsquared)},stars=True
                       ).tables[0]
 
+def mark_active_vs_passive_cols(df):
+    df.columns.name = 'Fund'
+    df = df.T.reset_index()
+    df.loc[:, 'x'] = ['Active' if x in ACTIVE else 'Passive' for x in df['Fund']]
+    df = df.set_index(['x', 'Fund']).T
+    df.columns.names = [None, None]
+    return df
+
+
 def get_fama_french_df(funds_list, returns_df):
     extra_factors = get_extra_factors_df(returns_df)
     fit_list = [fama_french_from_fund_obj(fund, returns_df, extra_factors)
                for fund in funds_list]
-    return summary(fit_list)
+    return mark_active_vs_passive_cols(summary(fit_list))
 
 
 
