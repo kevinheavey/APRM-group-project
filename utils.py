@@ -260,10 +260,11 @@ def get_funds_df(funds_list):
     return pd.DataFrame(sub_list)
 
 
-def make_tables(full_perf_stats_df, funds_df, fama_french_df):
+def make_tables(full_perf_stats_df, funds_df, fama_french_df, small_perf_stats_df):
     float_format = '%0.2f'
     with pd.ExcelWriter('tables.xlsx') as w:
         full_perf_stats_df.to_excel(w, 'perf_stats', float_format=float_format)
+        small_perf_stats_df.to_excel(w, 'perf_stats_small', float_format=float_format)
         funds_df.to_excel(w, 'fund_matches')
         fama_french_df.to_excel(w, 'fama_french', float_format=float_format)
 
@@ -331,5 +332,6 @@ def main():
     funds_list = get_funds_list()
     funds_df = get_funds_df(funds_list)
     full_perf_stats_df = get_full_perf_stats_df(returns_df, funds_list, risk_free_returns)
+    small_perf_stats_df = get_small_perf_stats_df(full_perf_stats_df)
     fama_french_df = get_fama_french_df(funds_list, returns_df)
-    make_tables(full_perf_stats_df, funds_df, fama_french_df)
+    make_tables(full_perf_stats_df, funds_df, fama_french_df, small_perf_stats_df)
