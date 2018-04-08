@@ -234,7 +234,7 @@ def get_small_perf_stats_df(full_perf_stats_df):
 def get_returns_df():
     prices = (pd.read_excel('APRM_total_returns.xlsx', skiprows=[0, 1, 2, 4, 5], index_col=0)
               .rename(columns=lambda col: col.replace(' US Equity', '').replace(' Index', ''))
-              )
+              ).dropna()
     returns_df = prices.pct_change().tail(-1)
     returns_df.index = returns_df.index.tz_localize('UTC')
     return returns_df
