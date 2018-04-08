@@ -142,7 +142,8 @@ def get_perf_df(returns_series, risk_free_returns_series, factor_returns_series)
                             'Sortino ratio': 'Sortino ratio (annualised)',
                             'Daily value at risk': 'Value at risk',
                             'Annual volatility': 'Volatility (annualised)',
-                            'Beta': 'Beta (CAPM)'}))
+                            'Beta': 'Beta (CAPM)',
+                            'Kurtosis':'Excess kurtosis'}))
     perf_df_raw.loc['Drawdown'] = drawdown
     return perf_df_raw
 
@@ -222,8 +223,8 @@ def get_small_perf_stats_df(full_perf_stats_df):
             'Drawdown',
             'Sortino ratio (annualised)',
             'Value at risk',
-            'Alpha (annualised)',
-            'Beta',
+            'Alpha (CAPM, annualised)',
+            'Beta (CAPM)',
             'Expected shortfall',
             'Information ratio (annualised)',
             'Shortfall risk',
