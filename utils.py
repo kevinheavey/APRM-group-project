@@ -241,7 +241,7 @@ def make_tables(full_perf_stats_df, funds_df, fama_french_df):
     with pd.ExcelWriter('tables.xlsx') as w:
         full_perf_stats_df.to_excel(w, 'perf_stats', float_format=float_format)
         funds_df.to_excel(w, 'fund_matches')
-        fama_french_df.to_excel(w, 'fama_french', float_format='%0.3f')
+        fama_french_df.to_excel(w, 'fama_french', float_format=float_format)
 
 
 
@@ -277,9 +277,9 @@ def get_extra_factors_df(returns_df):
 
 def summary(fit_list):
     return summary_col(fit_list,
-                       float_format='%0.3f',
+                       float_format='%0.2f',
                        info_dict={'N':lambda x: "{0:d}".format(int(x.nobs)),
-                                  'R2':lambda x: "{:.4f}".format(x.rsquared)},stars=True
+                                  'R2':lambda x: "{:.2f}".format(x.rsquared)},stars=True
                       ).tables[0]
 
 def get_fama_french_df(funds_list, returns_df):
