@@ -228,7 +228,6 @@ def get_small_perf_stats_df(full_perf_stats_df):
             'Expected shortfall',
             'Information ratio (annualised)',
             'Shortfall risk',
-            'Treynor ratio (annualised)',
             'root(lpm(0,2)) (annualised)']
     return full_perf_stats_df.loc[rows]
 
